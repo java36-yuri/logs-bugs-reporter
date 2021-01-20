@@ -41,10 +41,47 @@ ObjectMapper mapper = new ObjectMapper();
 @Autowired
 MockMvc mock;
 @Test
-void testPostRun() throws JsonProcessingException, Exception {
+void testPostNormal() throws JsonProcessingException, Exception {
 	assertEquals(200, mock.perform(post("/")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(mapper.writeValueAsString(TestController.logDtoExp)))
+			.andReturn()
+			.getResponse().getStatus());
+}
+@Test
+void testPostNoDate() throws JsonProcessingException, Exception {
+	LogDto logDtoExp = new LogDto(null, LogType.NO_EXCEPTION,
+			"artifact", 0, "");
+	assertEquals(400, mock.perform(post("/")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(logDtoExp)))
+			.andReturn()
+			.getResponse().getStatus());
+}
+@Test
+void testPostNoType() throws JsonProcessingException, Exception {
+	LogDto logDtoExp = new LogDto(new Date(), null,
+			"artifact", 0, "");
+	assertEquals(400, mock.perform(post("/")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(logDtoExp)))
+			.andReturn()
+			.getResponse().getStatus());
+}
+@Test
+void testPostNoArtifact() throws JsonProcessingException, Exception {
+	LogDto logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTION,
+			"", 0, "");
+	assertEquals(400, mock.perform(post("/")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(logDtoExp)))
+			.andReturn()
+			.getResponse().getStatus());
+	logDtoExp = new LogDto(new Date(), LogType.NO_EXCEPTION,
+			null, 0, "");
+	assertEquals(400, mock.perform(post("/")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(mapper.writeValueAsString(logDtoExp)))
 			.andReturn()
 			.getResponse().getStatus());
 }
